@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mongo.entities.User;
 import com.mongo.repos.UserRepository;
+import com.mongo.services.AutoIncrementService;
 
 @RestController
 @RequestMapping("/users")
@@ -18,6 +19,9 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private AutoIncrementService autoIncrementService;
+	
 	@GetMapping("/")
 	public ResponseEntity<?> getUsers(){
 		return ResponseEntity.ok(this.userRepository.findAll());
@@ -25,6 +29,8 @@ public class UserController {
 	
 	@PostMapping("/user")
 	public ResponseEntity<?> addUser(@RequestBody User user){
+		//generate sequence
+		user.setId(this.autoIncrementService.getNextSequenceId("user_sequence"));
 		this.userRepository.save(user);
 		return ResponseEntity.ok(user);
 	}
